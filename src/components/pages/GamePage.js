@@ -2,8 +2,9 @@ import React from 'react';
 import { HomeButton } from "../context.js";
 import { getGameBoard, getOutOfBattle1, getOutOfBattle2, getPlayer, getAppointed, isGameOver, getStartPos1, getStartPos2 } from '../redux/stateManagement.js';
 import { initialPrepState, initialArmy, SIZE, NUMOFSOLDIERS} from '../redux/stateManagement.js';
-import { setGameBoard, setOOB1, setOOB2, appointPiece, tooglePlayer, setGameOver } from '../redux/stateManagement.js';
-import { state, useDispatch, useSelector } from "react-redux";
+import { setGameBoard, setOOB1, setOOB2, appointPiece, tooglePlayer, setGameOver, setPage, states } from '../redux/stateManagement.js';
+import { useDispatch, useSelector } from "react-redux";
+import { strategoServerConnection } from "../websocket/strategoServerConnection.js";
 import { Piece } from '../pieces/pieces.js';
 
 export function GamePage() {
@@ -15,6 +16,11 @@ export function GamePage() {
   const oob1 = useSelector(getOutOfBattle1);
   const oob2 = useSelector(getOutOfBattle2);
   const dispatch = useDispatch();
+
+  strategoServerConnection.socket.on("player-left", (ack) => {
+    console.log("Az ellenséged elhagyta a szobát, veheted úgy, hogy nyertél.");
+    dispatch(setPage(states.MAIN));
+  });
   
   function showAvailableFields() {
     let availables = [];
@@ -304,7 +310,8 @@ export function GamePage() {
         <div>
           <p>A megoldásban idáig jutottam. (Előkésztítés után a bábuk a játékosok által meghatározott sorrendben látszanak.</p>
           <p>A játék nem játszható, a táblázat nem kattintható, a zavaró jelenségek elkerülése céljából.</p>
-          <p>Az utolsó feladat: a vissza gomb megnyomásával a főoldalra kerülünk, a szobát elhagyjuk.</p>
+          <p>Az utolsó feladat: a vissza gomb megnyomásával a főoldalra kerülünk (akár játék közben is megnyomható), a szobát elhagyjuk.</p>
+          <p>A másik játékos a player-left esemény hatására szintén a főoldalra kerül.</p>
           <p>A soron következő játékos: {actPlayer} .</p>
         </div>
         {createBoard(boardState)}

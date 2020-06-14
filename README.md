@@ -1,7 +1,7 @@
 Vas Nikoletta
 Neptun ID: h8hvzx
-Kliensoldali webprogramozás, Stratego c. beadandó feladat (2. felvonás)
-Beküldés ideje: 2020. 06. 01.
+Kliensoldali webprogramozás, Stratego c. beadandó feladat (3. felvonás)
+Beküldés ideje: 2020. 06. 14.
 Ezt a megoldást Vas Nikoletta (h8hvzx) küldte be és készítette a Kliensoldali webprogramozás kurzus Stratego feladatához.
 Kijelentem, hogy ez a megoldás a saját munkám.
 Nem másoltam vagy használtam harmadik féltől származó megoldásokat.
@@ -11,21 +11,16 @@ hogy mindaddig, amíg egy hallgató egy másik hallgató munkáját - vagy legal
 az fegyelmi vétségnek számít. A fegyelmi vétség legsúlyosabb következménye a hallgató elbocsátása az egyetemről.
 
 Codesandbox:
-https://codesandbox.io/s/github/vasnikoletta/stratego2
+https://codesandbox.io/s/github/vasnikoletta/Stratego3
 
-Az utolsó verziót határidőn túl adtam be (gyakorlatvezetővel egyeztetve).
-A korábbihoz képest javítva:
-- Csak katonával lehet lépni, bombával és zászlóval nem.
-- A játék véget ér, ha valaki megszerezte a zászlót vagy egy játékos minden katonája lekerült a tábláról.
-- A támadó azonosításával (1. vagy 2. játékos) nem keverednek a két játékos lekerült bábui.
-
-Részleges megoldások:
-- A játéktáblán ütközet továbbra is úgy lehetséges, ha a cellán belül és a bábun kívül kattint a játékos.
-- Ütközetkor a csak konzolon jelennek meg az erőviszonyok.
-- A főoldalra való visszatérés után a korábbi lépések a tábláról törlődnek. 
-
-Hiba:
-- ha a játék valamelyik játékos győzelmével ért véget, a 'Vissza' gombra kattintva, majd az előkészítő oldalra jutva, a bábuk disabled-ek, nem tehetők fel újra a táblára, ehhez frissíteni kell az oldalt. A probléma okát nem találtam.
+A megoldásban a következőkig jutottam el:
+- szobához csatlkozás
+- szobaszám ellenőrzése
+- előkészítő oldal: kezdőállás létrehozása a két játékosnál -> az állapotszinkronizálás már nem sikerült.
+- játékoldal: Amennyiben tovább tudnának lépni, a játéktábla és a két játékos kezdőállása jelenne meg, 
+  a zavaró jelenségek elkerülése céljából a játéktábla nem kattintható, a játék nem játszható.
+- Az utolsó feladat: a játék végén egy gomb megnyomásával visszajutunk a főoldalra (a vissza gomb és a leave-room üzenet küldése,
+  valamint a játékoldalon a player-left esemény figyelése implementálva van.)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

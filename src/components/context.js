@@ -4,7 +4,7 @@ import { WaitPage } from './pages/WaitPage.js';
 import { PrepPage } from './pages/PrepPage.js';
 import { PrepPage2 } from './pages/PrepPage2.js';
 import { GamePage } from './pages/GamePage.js';
-import { states, getPage, setPage, getOutOfBattle1, setBoard, initialPrepState, initialArmy, setOOB1, setOOB2, setGameOver, saveRoomId, getOutOfBattle2, setPlayer1Status, getPlayer1Status, getPlayer2Status, setPlayer2Status, store } from './redux/stateManagement.js';
+import { states, getPage, setPage, getOutOfBattle1, setBoard, initialPrepState, initialArmy, setOOB1, setOOB2, setGameOver, saveRoomId, getOutOfBattle2, setPlayer1Status, getPlayer1Status, getPlayer2Status, setPlayer2Status, store, getRoomId } from './redux/stateManagement.js';
 import { useDispatch, useSelector } from "react-redux";
 import { strategoServerConnection } from './websocket/strategoServerConnection.js';
 
@@ -40,6 +40,7 @@ export const Navigation = () => {
 }
 
 export const HomeButton = () => {
+  const roomId = useSelector(getRoomId);
   
   const dispatch = useDispatch();
   const handleClick = () => {
@@ -48,6 +49,13 @@ export const HomeButton = () => {
     dispatch(setOOB2([]));
     dispatch(setPage(states.MAIN));
     dispatch(setGameOver(false));
+    strategoServerConnection.socket.emit("leave-room", roomId, (ack) => {
+      if (ack.status === "ok") {
+        console.log("Az egyik játékos elhagyta a szobát.");
+      } else {
+        console.log(ack.message);
+      }
+    });
   }
 
   return (
@@ -126,7 +134,7 @@ export const GameButton = () => {
     
   };
   
-  if ((actualPage === states.PREP && armyList1.length > 0) || (actualPage === states.PREP2 && armyList2.lenth > 0)) {
+  if ((actualPage === states.PREP && armyList1.length > 0) || (actualPage === states.PREP2 && armyList2.length > 0)) {
     return (
       <button onClick={handleClick} disabled>
         Tovább
