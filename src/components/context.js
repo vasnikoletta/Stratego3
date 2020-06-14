@@ -101,19 +101,14 @@ export const GameButton = () => {
   let actualPage = useSelector(getPage);
   let armyList1 = useSelector(getOutOfBattle1);
   let armyList2 = useSelector(getOutOfBattle2);
-  let isPlyr1Ready = useSelector(getPlayer1Status);
-  let isPlyr2Ready = useSelector(getPlayer2Status);
-  const dispatch = useDispatch();
+  let roomId = useSelector(getRoomId);
 
-  if (isPlyr1Ready && isPlyr2Ready) {
-    dispatch(setPage(states.GAME));
-  }
-
+  const dispatch = useDispatch()
   
   const handleClick = () => {
     if (actualPage === states.PREP) {
       dispatch(setPlayer1Status(true));
-      strategoServerConnection.socket.emit("sync-state", isPlyr1Ready, true, (ack) => {
+      strategoServerConnection.socket.emit("sync-state", roomId, true, true, (ack) => {
         if (ack.status === "ok") {
           console.log("Az állapot szerver felé elküldve.");
         } else {
@@ -123,7 +118,7 @@ export const GameButton = () => {
 
     } else if (actualPage === states.PREP2) {
       dispatch(setPlayer2Status(true));
-      strategoServerConnection.socket.emit("sync-state", isPlyr2Ready, true, (ack) => {
+      strategoServerConnection.socket.emit("sync-state", roomId, true, true, (ack) => {
         if (ack.status === "ok") {
           console.log("Az állapot szerver felé elküldve.");
         } else {

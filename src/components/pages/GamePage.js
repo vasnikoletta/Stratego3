@@ -308,7 +308,7 @@ export function GamePage() {
       return (
         <>
         <div>
-          <p>A megoldásban idáig jutottam. (Előkésztítés után a bábuk a játékosok által meghatározott sorrendben látszanak.</p>
+          <p>A megoldásban idáig jutottam. (Előkésztítés után a bábuk a játékosok által meghatározott sorrendben látszanak, mindenkinél csak a sajátja.</p>
           <p>A játék nem játszható, a táblázat nem kattintható, a zavaró jelenségek elkerülése céljából.</p>
           <p>Az utolsó feladat: a vissza gomb megnyomásával a főoldalra kerülünk (akár játék közben is megnyomható), a szobát elhagyjuk.</p>
           <p>A másik játékos a player-left esemény hatására szintén a főoldalra kerül.</p>

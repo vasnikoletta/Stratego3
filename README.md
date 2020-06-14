@@ -16,9 +16,11 @@ https://codesandbox.io/s/github/vasnikoletta/Stratego3
 A megoldásban a következőkig jutottam el:
 - szobához csatlkozás
 - szobaszám ellenőrzése
-- előkészítő oldal: kezdőállás létrehozása a két játékosnál -> az állapotszinkronizálás már nem sikerült.
-- játékoldal: Amennyiben tovább tudnának lépni, a játéktábla és a két játékos kezdőállása jelenne meg, 
-  a zavaró jelenségek elkerülése céljából a játéktábla nem kattintható, a játék nem játszható.
+- előkészítő oldal: kezdőállás létrehozása a két játékosnál -> az állapotszinkronizálás csak részben sikerült:
+  sync-state üzenetben küld mindkét játékos egy igaz értéket, miután felállította a bábuit -> ebből módosítja az ellenfél 
+  állapotát a másik játékos. Amennyiben mindketten készen vannak, az előkészítő oldalról a játékoldalra kerülnek.
+  (A sync-state küldése a components/context.js-ben található: 111, 121. sorban. Ha "true" helyett a lekérdezett állapotot próbáltam elküldeni, akkor az false maradt annak ellenére, hogy előtte módosítani szándékoztam - ezért ez a megoldás.)
+- játékoldal: NINCS KIDOLGOZVA. Mindkét játékosnál csak a saját bábui jelennek meg. A zavaró jelenségek elkerülése céljából a       játéktábla nem kattintható, a játék nem játszható.
 - Az utolsó feladat: a játék végén egy gomb megnyomásával visszajutunk a főoldalra (a vissza gomb és a leave-room üzenet küldése,
   valamint a játékoldalon a player-left esemény figyelése implementálva van.)
 

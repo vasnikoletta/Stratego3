@@ -1,24 +1,28 @@
 import React from 'react';
 import { GameButton, HomeButton } from '../context';
-import { SIZE, getOutOfBattle1, getBoard, getAppointed, setOOB1, setBoard, appointPiece, getStartPos1, setStartPos1 } from '../redux/stateManagement.js';
+import { SIZE, setPage, getOutOfBattle1, setPlayer2Status, getBoard, getAppointed, setOOB1, setBoard } from '../redux/stateManagement.js';
+import { states, getStartPos1, setStartPos1, appointPiece, getPlayer1Status, getPlayer2Status } from '../redux/stateManagement.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { Piece } from '../pieces/pieces.js';
 import { strategoServerConnection } from '../websocket/strategoServerConnection.js';
 
 export function PrepPage() {
-  const room = 1;
   let armyList1 = useSelector(getOutOfBattle1);
   let boardState = useSelector(getBoard);
   let startpos1 = useSelector(getStartPos1);
+  const isPlyr1Ready = useSelector(getPlayer1Status);
+  const isPlyr2Ready = useSelector(getPlayer2Status);
   const appointed = useSelector(getAppointed);
   const dispatch = useDispatch();
 
   strategoServerConnection.socket.on("state-changed", (ack) => {
     console.log(ack);
-    const state = JSON.parse(ack.state);
-    console.log(state);
-    //dispatch(syncStateAction(state)); 
+    dispatch(setPlayer2Status(ack.state));
   });
+
+  if (isPlyr1Ready && isPlyr2Ready) {
+    dispatch(setPage(states.GAME));
+  }
 
   function createTable(boardSt) {
     let table = [];
@@ -108,7 +112,7 @@ export function PrepPage() {
   return (
     <>
     <div className = "preparation">
-      <h3>ELŐKÉSZÍTÉS ({room}. szoba)</h3>
+      <h3>ELŐKÉSZÍTÉS</h3>
       <p>Hozd létre a sereged kezdőállását!</p>
       <p>A zászló (F), a bombák (B) és a katonák az egérrel jelölhetők ki, majd egérkattintással illeszthetők a megengedett - sárga keretes - mezőkbe.
         Ha meggondolod magad, változtathatsz a bábu elhelyezésén.

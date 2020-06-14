@@ -1,6 +1,7 @@
 import React from 'react';
 import { GameButton, HomeButton } from '../context';
-import { SIZE, getOutOfBattle2, getBoard, getAppointed, setOOB2, setBoard, appointPiece, getStartPos2, setStartPos2 } from '../redux/stateManagement.js';
+import { SIZE, getOutOfBattle2, getBoard, getAppointed, setOOB2, setPage, states, getPlayer1Status, getPlayer2Status } from '../redux/stateManagement.js';
+import { setBoard, appointPiece, getStartPos2, setStartPos2, setPlayer1Status } from '../redux/stateManagement.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { Piece } from '../pieces/pieces.js';
 import {strategoServerConnection} from '../websocket/strategoServerConnection.js';
@@ -10,13 +11,19 @@ export function PrepPage2() {
   let armyList2 = useSelector(getOutOfBattle2);
   let boardState = useSelector(getBoard);
   let startpos2 = useSelector(getStartPos2);
+  const isPlyr1Ready = useSelector(getPlayer1Status);
+  const isPlyr2Ready = useSelector(getPlayer2Status);
   const appointed = useSelector(getAppointed);
   const dispatch = useDispatch();
 
   strategoServerConnection.socket.on("state-changed", (ack) => {
     console.log(ack);
-    const state = JSON.parse(ack.state);
+    dispatch(setPlayer1Status(ack.state));
   });
+
+  if (isPlyr1Ready && isPlyr2Ready) {
+    dispatch(setPage(states.GAME));
+  }
 
   function createTable(boardSt) {
     let table = [];
