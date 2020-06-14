@@ -10,7 +10,7 @@ import { strategoServerConnection } from './websocket/strategoServerConnection.j
 
 export const Navigation = () => {
   const page = useSelector(getPage);
-  
+
   if (page === states.MAIN) {
     return (
       <MainPage></MainPage>
@@ -105,17 +105,25 @@ export const GameButton = () => {
   const handleClick = () => {
     if (actualPage === states.PREP) {
       dispatch(setPlayer1Status(true));
+      strategoServerConnection.socket.emit("sync-state", isPlyr1Ready, true, (ack) => {
+        if (ack.status === "ok") {
+          console.log("Az állapot szerver felé elküldve.");
+        } else {
+          console.log(ack.message);
+        }
+      });
 
     } else if (actualPage === states.PREP2) {
       dispatch(setPlayer2Status(true));
+      strategoServerConnection.socket.emit("sync-state", isPlyr2Ready, true, (ack) => {
+        if (ack.status === "ok") {
+          console.log("Az állapot szerver felé elküldve.");
+        } else {
+          console.log(ack.message);
+        }
+      });
     }
-    strategoServerConnection.socket.emit("sync-state", JSON.stringify(store), true, (ack) => {
-      if (ack.status === "ok") {
-        console.log("Az állapot szerver felé elküldve.");
-      } else {
-        console.log(ack.message);
-      }
-    });
+    
   };
   
   if ((actualPage === states.PREP && armyList1.length > 0) || (actualPage === states.PREP2 && armyList2.lenth > 0)) {
