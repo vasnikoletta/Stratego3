@@ -1,23 +1,21 @@
 import React from 'react';
 import { GameButton, HomeButton } from '../context';
-import { SIZE, getOutOfBattle1, getBoard, getAppointed, setOOB1, setBoard, appointPiece, getStartPos1, setStartPos1 } from '../redux/stateManagement.js';
+import { SIZE, getOutOfBattle2, getBoard, getAppointed, setOOB2, setBoard, appointPiece, getStartPos2, setStartPos2 } from '../redux/stateManagement.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { Piece } from '../pieces/pieces.js';
-import { strategoServerConnection } from '../websocket/strategoServerConnection.js';
+import {strategoServerConnection} from '../websocket/strategoServerConnection.js';
 
-export function PrepPage() {
-  const room = 1;
-  let armyList1 = useSelector(getOutOfBattle1);
+export function PrepPage2() {
+  //const room = 1;
+  let armyList2 = useSelector(getOutOfBattle2);
   let boardState = useSelector(getBoard);
-  let startpos1 = useSelector(getStartPos1);
+  let startpos2 = useSelector(getStartPos2);
   const appointed = useSelector(getAppointed);
   const dispatch = useDispatch();
 
   strategoServerConnection.socket.on("state-changed", (ack) => {
     console.log(ack);
     const state = JSON.parse(ack.state);
-    console.log(state);
-    //dispatch(syncStateAction(state)); 
   });
 
   function createTable(boardSt) {
@@ -31,7 +29,10 @@ export function PrepPage() {
         let score = boardSt[(i % SIZE)*SIZE + j].score;
 
         if (player === 0) {
-          if (index >= 24) classNames = "prep-field-cell free-prep-field-cell";
+          if (index < 12) { classNames = "prep-field-cell free-prep-field-cell";
+        } else {
+          classNames = "prep-field-cell";
+        }
         child.push(<td className={ classNames } plyr = {player} ind = {index}> { index } </td>);
         } else {
           classNames = "prep-field-cell";
@@ -49,30 +50,29 @@ export function PrepPage() {
     const indx = parseInt(cell.getAttribute("ind"));
     const plyr = parseInt(cell.getAttribute("plyr"));
     
-    if (appointed !== null && indx >= 24 && plyr === 0) {
+    if (appointed !== null && indx < 12 && plyr === 0) {
       
-      const newOob = armyList1.filter((s) => s._id !== appointed.id);
+      const newOob = armyList2.filter((s) => s._id !== appointed.id);
       const newBoardState = [...boardState];
-      let newStartPosition = [...startpos1];
-      let selectedPiece = armyList1.find((s) => s._id === appointed.id);
+      let newStartPosition = [...startpos2];
+      let selectedPiece = armyList2.find((s) => s._id === appointed.id);
       if (selectedPiece === undefined) {
         selectedPiece = boardState.find((s) => s.index === appointed.id && s.player !== 0);
         const clearPosition = {index: boardState.indexOf(selectedPiece), score: "", player: 0};
         newBoardState[indx] = selectedPiece;
-        
-        newStartPosition[indx-24] = selectedPiece;
+        newStartPosition[indx] = selectedPiece;
         newBoardState[boardState.indexOf(selectedPiece)] = clearPosition;
-        newStartPosition[boardState.indexOf(selectedPiece)-24] = clearPosition; 
+        newStartPosition[boardState.indexOf(selectedPiece)] = clearPosition; 
         dispatch(setBoard(newBoardState));
-        dispatch(setStartPos1(newStartPosition));
+        dispatch(setStartPos2(newStartPosition));
       } else {
 
         const newPieceOnBoard = {index: selectedPiece._id, score: selectedPiece.score, player: selectedPiece.player};
         newBoardState[indx] = newPieceOnBoard;
-        newStartPosition[indx-24] = newPieceOnBoard;
-        dispatch(setOOB1(newOob));
+        newStartPosition[indx] = newPieceOnBoard;
+        dispatch(setOOB2(newOob));
         dispatch(setBoard(newBoardState));
-        dispatch(setStartPos1(newStartPosition));
+        dispatch(setStartPos2(newStartPosition));
       }
         dispatch(appointPiece(null));
     }
@@ -80,48 +80,49 @@ export function PrepPage() {
 
   const handleHandClick = () => {
     if (appointed !== null) {
-      let selectedPiece = armyList1.find((s) => s._id === appointed.id);
+      let selectedPiece = armyList2.find((s) => s._id === appointed.id);
       if (selectedPiece === undefined) {
         
         selectedPiece = boardState.find((s) => s.index === appointed.id && s.player !== 0);
         const newPieceInHand = {_id: selectedPiece.index, score: selectedPiece.score, player: selectedPiece.player};
         const clearPosition = {index: boardState.indexOf(selectedPiece), score: "", player: 0};
         
-        let newArmyList = [...armyList1];
+        let newArmyList = [...armyList2];
         newArmyList.push(newPieceInHand);
         let newBoardState = [...boardState];
-        let newStartPosition = [...startpos1];
+        let newStartPosition = [...startpos2];
         newBoardState[boardState.indexOf(selectedPiece)] = clearPosition;
-        newStartPosition[boardState.indexOf(selectedPiece)-24] = clearPosition;
+        newStartPosition[boardState.indexOf(selectedPiece)] = clearPosition;
         
-        dispatch(setOOB1(newArmyList));
+        dispatch(setOOB2(newArmyList));
         dispatch(setBoard(newBoardState));
+        dispatch(setStartPos2(newStartPosition));
         dispatch(appointPiece(null));
-        dispatch(setStartPos1(newStartPosition));
       }
     }
   };
   
   const army = [];
-  armyList1.map((p) => army.push(<Piece attrs = {[p.score, p._id]}></Piece>));
+  armyList2.map((p) => army.push(<Piece attrs = {[p.score, p._id]}></Piece>));
 
   return (
     <>
     <div className = "preparation">
-      <h3>ELŐKÉSZÍTÉS ({room}. szoba)</h3>
+      <h3>ELŐKÉSZÍTÉS</h3>
       <p>Hozd létre a sereged kezdőállását!</p>
       <p>A zászló (F), a bombák (B) és a katonák az egérrel jelölhetők ki, majd egérkattintással illeszthetők a megengedett - sárga keretes - mezőkbe.
         Ha meggondolod magad, változtathatsz a bábu elhelyezésén.
         A különböző rangú katonák tulajdonságainak leírását a játékszabályoknál találod.
       </p>
-      
-      {createTable(boardState)}
-      
+
       <div className = "army" onClick = {handleHandClick}>
        
         { army }
 
       </div>
+      
+      {createTable(boardState)}
+      
       <GameButton/>
       <HomeButton/>
     </div>
@@ -129,4 +130,4 @@ export function PrepPage() {
   );
 }
 
-export default PrepPage;
+export default PrepPage2;

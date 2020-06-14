@@ -16,7 +16,7 @@ export function WaitPage() {
   return (
     <>
     <h3>Várakozás második játékosra.</h3>
-    <p>Szoba azonosítója: {roomNr}.</p>
+    <p>Szoba azonosítója: {roomNr}</p>
     <HomeButton/>
     </>
   );

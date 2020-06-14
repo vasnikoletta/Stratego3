@@ -2,8 +2,9 @@ import React from 'react';
 import { MainPage } from './pages/MainPage.js';
 import { WaitPage } from './pages/WaitPage.js';
 import { PrepPage } from './pages/PrepPage.js';
+import { PrepPage2 } from './pages/PrepPage2.js';
 import { GamePage } from './pages/GamePage.js';
-import { states, getPage, setPage, getOutOfBattle1, setBoard, initialPrepState, initialArmy, setOOB1, setOOB2, setGameOver, saveRoomId } from './redux/stateManagement.js';
+import { states, getPage, setPage, getOutOfBattle1, setBoard, initialPrepState, initialArmy, setOOB1, setOOB2, setGameOver, saveRoomId, getOutOfBattle2, setPlayer1Status, getPlayer1Status, getPlayer2Status, setPlayer2Status, store } from './redux/stateManagement.js';
 import { useDispatch, useSelector } from "react-redux";
 import { strategoServerConnection } from './websocket/strategoServerConnection.js';
 
@@ -21,6 +22,10 @@ export const Navigation = () => {
   } else if (page === states.PREP) {
     return (
       <PrepPage></PrepPage>
+    );
+  } else if (page === states.PREP2) {
+    return (
+      <PrepPage2></PrepPage2>
     );
   } else if (page === states.GAME) {
     return (
@@ -85,11 +90,35 @@ export const PrepButton = () => {
 }
 
 export const GameButton = () => {
-  let armyList = useSelector(getOutOfBattle1);
+  let actualPage = useSelector(getPage);
+  let armyList1 = useSelector(getOutOfBattle1);
+  let armyList2 = useSelector(getOutOfBattle2);
+  let isPlyr1Ready = useSelector(getPlayer1Status);
+  let isPlyr2Ready = useSelector(getPlayer2Status);
   const dispatch = useDispatch();
-  const handleClick = () => dispatch(setPage(states.GAME));
+
+  if (isPlyr1Ready && isPlyr2Ready) {
+    dispatch(setPage(states.GAME));
+  }
+
   
-  if (armyList.length > 0) {
+  const handleClick = () => {
+    if (actualPage === states.PREP) {
+      dispatch(setPlayer1Status(true));
+
+    } else if (actualPage === states.PREP2) {
+      dispatch(setPlayer2Status(true));
+    }
+    strategoServerConnection.socket.emit("sync-state", JSON.stringify(store), true, (ack) => {
+      if (ack.status === "ok") {
+        console.log("Az állapot szerver felé elküldve.");
+      } else {
+        console.log(ack.message);
+      }
+    });
+  };
+  
+  if ((actualPage === states.PREP && armyList1.length > 0) || (actualPage === states.PREP2 && armyList2.lenth > 0)) {
     return (
       <button onClick={handleClick} disabled>
         Tovább

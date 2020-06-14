@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { HomeButton, PrepButton } from './context.js';
 import { useDispatch, useSelector } from "react-redux";
-import { states, setPage } from "./redux/stateManagement.js";
+import { states, setPage, saveRoomId } from "./redux/stateManagement.js";
 import { strategoServerConnection } from './websocket/strategoServerConnection.js';
 
 export function Rules() {
@@ -79,11 +79,12 @@ export const JoinRoom = () => {
   strategoServerConnection.socket.on("room-is-full", (ack) => {
     console.log("Szerver szolt, h megvagyunk.");
     console.log(ack);
-    dispatch(setPage(states.PREP));
+    dispatch(setPage(states.PREP2));
   });
 
   const handleJoin = (e) => {
     const roomId = e.currentTarget.value;
+    dispatch(saveRoomId(roomId));
     strategoServerConnection.socket.emit("join-room", roomId, (ack) => {
       console.log("csatlakozasi kiserlet szobahoz: "); 
       console.log(ack);

@@ -1,18 +1,19 @@
 import React from 'react';
 import { HomeButton } from "../context.js";
-import { getBoard, getOutOfBattle1, getOutOfBattle2, getPlayer, getAppointed, isGameOver } from '../redux/stateManagement.js';
+import { getGameBoard, getOutOfBattle1, getOutOfBattle2, getPlayer, getAppointed, isGameOver, getStartPos1, getStartPos2 } from '../redux/stateManagement.js';
 import { initialPrepState, initialArmy, SIZE, NUMOFSOLDIERS} from '../redux/stateManagement.js';
-import { setBoard, setOOB1, setOOB2, appointPiece, tooglePlayer, setGameOver } from '../redux/stateManagement.js';
-import { useDispatch, useSelector } from "react-redux";
+import { setGameBoard, setOOB1, setOOB2, appointPiece, tooglePlayer, setGameOver } from '../redux/stateManagement.js';
+import { state, useDispatch, useSelector } from "react-redux";
 import { Piece } from '../pieces/pieces.js';
 
 export function GamePage() {
   const actPlayer = useSelector(getPlayer);
   const appointed = useSelector(getAppointed);
-  const boardState = useSelector(getBoard);
+  const boardState = useSelector(getGameBoard);
+  const plyr1Start = useSelector(getStartPos1);
+  const plyr2Start = useSelector(getStartPos2);
   const oob1 = useSelector(getOutOfBattle1);
   const oob2 = useSelector(getOutOfBattle2);
-  //const isGO = useSelector(isGameOver);
   const dispatch = useDispatch();
   
   function showAvailableFields() {
@@ -67,15 +68,27 @@ export function GamePage() {
   function createBoard(boardSt) {
     let table = [];
     let availables = [];
+    let startStateOfTable = [...plyr2Start];
+    for (let i = 2; i< 4; ++i) {
+      for (let j = 0; j< SIZE; ++j) {
+        let ind = (i % SIZE)*SIZE + j;
+        startStateOfTable.push(boardSt[ind]);
+      }
+    }
+    plyr1Start.map(p =>
+      startStateOfTable.push(p)
+    );
+
     if (appointed != null) availables = showAvailableFields();
     //console.log("A tablazat cellainak adaatai:");
+    
     for (let i = 0; i < SIZE; ++i) {
       let child = [];
       for (let j = 0; j < SIZE; ++j) {
         let ind = (i % SIZE)*SIZE + j;
-        let index = boardSt[ind].index;
-        let player = boardSt[ind].player;
-        let score = boardSt[ind].score;
+        let index = startStateOfTable[ind].index;
+        let player = startStateOfTable[ind].player;
+        let score = startStateOfTable[ind].score;
         let classNames = "prep-field-cell";
         //console.log("index: " + ind + ", id: " + index + ", player: " + player + ", score: " + score + ".");
         let isAvailable = availables.filter((i) => i === ind);
@@ -90,7 +103,8 @@ export function GamePage() {
       }
       table.push(<tr>{child}</tr>);
     }
-    return <table className="board" onClick = {handleStep}><tbody>{table}</tbody></table>;
+    //return <table className="board" onClick = {handleStep}><tbody>{table}</tbody></table>;
+    return <table className="board"><tbody>{table}</tbody></table>;
   }
 
   const handleStep = (e) => {
@@ -124,7 +138,7 @@ export function GamePage() {
         const clearPosition = {index: fromIndex, score: "", player: 0};
         newBoardState[fromIndex] = clearPosition;
         newBoardState[toIndex] = selectedPiece;
-        dispatch(setBoard(newBoardState));
+        dispatch(setGameBoard(newBoardState));
         dispatch(appointPiece(null));
         changePlayer();
 
@@ -160,7 +174,7 @@ export function GamePage() {
     const clearPosition = {index: from, score: "", player: 0};
     newBoardState[to] = selected;
     newBoardState[from] = clearPosition;
-    dispatch(setBoard(newBoardState));
+    dispatch(setGameBoard(newBoardState));
     dispatch(appointPiece(null));
     changePlayer();
   };
@@ -179,7 +193,7 @@ export function GamePage() {
       dispatch(setOOB1(newOutOfBoard));
     }
     newBoardState[from] = clearPosition;
-    dispatch(setBoard(newBoardState));
+    dispatch(setGameBoard(newBoardState));
     dispatch(appointPiece(null));
     changePlayer();
   };
@@ -200,7 +214,7 @@ export function GamePage() {
       newOutOfBoard.push(attacked);
       dispatch(setOOB2(newOutOfBoard));
     }
-    dispatch(setBoard(newBoardState));
+    dispatch(setGameBoard(newBoardState));
     dispatch(appointPiece(null));
     changePlayer();
   };
@@ -223,7 +237,7 @@ export function GamePage() {
     dispatch(setOOB1(newOutOfBoard1));
     newBoardState[from] = clearPositionFrom;
     newBoardState[to] = clearPositionTo;
-    dispatch(setBoard(newBoardState));
+    dispatch(setGameBoard(newBoardState));
     dispatch(appointPiece(null));
     changePlayer();
   };
@@ -231,7 +245,7 @@ export function GamePage() {
   const attackerWins = () => {
     dispatch(setGameOver(true));
     dispatch(appointPiece(null));
-    dispatch(setBoard(initialPrepState));
+    dispatch(setGameBoard(initialPrepState));
     dispatch(setOOB1(initialArmy));
     dispatch(setOOB2([]));
     console.log(actPlayer + ". számú játékos megszerezte a zászlót, igy megnyerte a játékot.");
@@ -288,6 +302,9 @@ export function GamePage() {
       return (
         <>
         <div>
+          <p>A megoldásban idáig jutottam. (Előkésztítés után a bábuk a játékosok által meghatározott sorrendben látszanak.</p>
+          <p>A játék nem játszható, a táblázat nem kattintható, a zavaró jelenségek elkerülése céljából.</p>
+          <p>Az utolsó feladat: a vissza gomb megnyomásával a főoldalra kerülünk, a szobát elhagyjuk.</p>
           <p>A soron következő játékos: {actPlayer} .</p>
         </div>
         {createBoard(boardState)}
