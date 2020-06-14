@@ -1,0 +1,147 @@
+.App {
+  text-align: top center;
+  background-color: #556B2F;
+}
+
+.App-logo {
+  width: 50vw;
+  background-position: top;
+  border: 2px solid #556B2F;
+}
+
+.App-header {
+  background-color: #556B2F;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(8px + 2vmin);
+  color: black;
+  height: auto;
+  width: 100vw;
+}
+
+.App-body {
+  background-color: #556B2F;
+  color: black;
+  width: 100vw;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: calc(8px + 2vmin);
+  padding-bottom: 5%;
+}
+
+button {
+  padding: 5px;
+  margin: 5px;
+  font-size: calc(3px + 2vmin);
+  font-weight: bold;
+  color: brown;
+  background-color: wheat;
+}
+
+button:disabled {
+  color: darkslategray;
+  background-color: lightgrey;
+}
+
+.Rules {
+  display: none;
+  width: 70vw;
+}
+
+.Join-Room {
+  display: none;
+}
+
+.preparation, .game {
+  width: 90vw;
+  text-align: center;
+  margin: auto;
+}
+
+.army {
+  border: 1px solid black;
+  background-color: #89ab89;
+  min-height: 40px;
+}
+
+.piece {
+  border: 2px solid #a30d05;
+  padding: auto;
+  margin: 10px 10px;
+  font-size: calc(3px + 2vmin);
+  font-weight: bold;
+  color: #a30d05;
+  text-align: center;
+  vertical-align: middle;
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+}
+
+.selected-piece {
+  background-color: yellow;
+}
+
+.enemyPiece {
+  border: 2px solid blue;
+  color: blue;
+}
+
+.selected-piece.enemyPiece {
+  border: 2px solid yellow;
+}
+
+.prep-field, .board {
+  margin: auto;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.board {
+  background-image: url('./logo/field.jpg');
+  background-size: 100% auto;
+  margin-bottom: 20px;
+}
+
+.prep-field-cell, .board-cell {
+  border: 1px dotted black;
+  height: 60px;
+  width: 60px;
+  margin: auto;
+  text-align: center;
+}
+
+.free-prep-field-cell {
+  border: 1px solid yellow;
+}
+
+.available-board-cell {
+  border: 1px solid yellow;
+}
+
+.lost {
+  border: 1px solid black;
+  width: 70vW;
+  margin: auto;
+  background-color: #83916a;
+}
+
+.cemetery {
+  color: white;
+  background-color: black;
+  text-align: center;
+  width: 70vw;
+  margin-bottom: 0;
+}
+
+.lost-soldiers {
+  min-height: 80px;
+  margin-top: 0;
+}
+
+.selected {
+  border: 2px solid yellow;
+}
